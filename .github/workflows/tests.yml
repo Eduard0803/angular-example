@@ -1,9 +1,9 @@
-name: Testing Angular
+name: Reformat Angular
 
 on: push
 
 jobs:
-  black:
+  reformat:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -16,14 +16,14 @@ jobs:
         pip install black isort
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
-    - name: Run isort and black
-      run: |
-        isort .
-        black .
+    - name: run isort
+      run: isort .
+    - name: run black
+      run: black .
     - name: Commit changes
       run: |
         git add .
-        git diff-index --quiet HEAD || git commit -m "Auto-format code using isort and black"
+        git diff-index --quiet HEAD || git commit -m "auto-reformat files"
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
