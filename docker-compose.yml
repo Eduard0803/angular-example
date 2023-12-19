@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: eduard0803
+    ports:
+    - "8000:8000"
+    volumes:
+    - .:/app/src/
+    restart: always
+    env_file:
+    - .env
+    depends_on:
+    - db
+    environment:
+      DB_HOST: angular-db
+      DB_PORT: 5432
+      DB_USER: angular
+      DB_PASS: angular
+      DB_BASE: angular
+      HOST: 0.0.0.0
+      PORT: 8000
+      RELOAD: "True"
+    networks:
+    - angular_network
+
+  db:
+    image: postgres
+    hostname: angular-db
+    ports:
+    - "5433:5432"
+    volumes:
+    - angular-db-data:/var/lib/postgresql/data
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "angular"
+      POSTGRES_USER: "angular"
+      POSTGRES_DB: "angular"
+    networks:
+    - angular_network
+
+volumes:
+  angular-db-data:
+    name: angular-db-data
+
+networks:
+  angular_network:
+    external: true
+    driver: 'bridge'

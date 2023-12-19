@@ -1,0 +1,30 @@
+name: Testing Angular
+
+on: push
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    - name: Install dependencies
+      run: |
+        pip install black isort
+        git config --global user.email "actions@github.com"
+        git config --global user.name "GitHub Actions"
+    - name: Run isort and black
+      run: |
+        isort .
+        black .
+    - name: Commit changes
+      run: |
+        git add .
+        git diff-index --quiet HEAD || git commit -m "Auto-format code using isort and black"
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
