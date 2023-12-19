@@ -60,3 +60,4 @@ if __name__ == "__main__":
     import subprocess as sub
 
     sub.call(["uvicorn", "server:app", "--reload", "--host", "0.0.0.0"])
+    # sub.call(["uvicorn", "server:app", "--reload"])
