@@ -6,8 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from db import Session, UserTable
 from user_schema import User
 
-# users = []
-
 app = FastAPI(
     title="API",
 )

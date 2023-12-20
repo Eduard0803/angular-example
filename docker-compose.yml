@@ -18,9 +18,9 @@ services:
     environment:
       DB_HOST: angular-db
       DB_PORT: 5432
-      DB_USER: angular
-      DB_PASS: angular
-      DB_BASE: angular
+      DB_USER: "angular"
+      DB_PASS: "angular"
+      DB_BASE: "angular"
       HOST: 0.0.0.0
       PORT: 8000
       RELOAD: "True"
