@@ -1,29 +1,22 @@
-import os
+from sqlalchemy import Column, Integer, MetaData, String, Table, create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-from sqlalchemy import Column, Integer, MetaData, String, create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
-
-PSQL_HOST = os.getenv("DB_HOST")
-PSQL_PORT = os.getenv("DB_PORT")
-PSQL_USERNAME = os.getenv("DB_USER")
-PSQL_PASSWORD = os.getenv("DB_PASS")
-PSQL_DB = os.getenv("DB_BASE")
-
-DATABASE_URL = (
-    f"postgresql://{PSQL_USERNAME}:{PSQL_PASSWORD}@{PSQL_HOST}:{PSQL_PORT}/{PSQL_DB}"
-)
+DATABASE_URL = "postgresql://username:password@host_adreess:port_number/db_name"
+DATABASE_URL = "postgresql://postgres:364648255@localhost:5433/postgres"
 
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()
-Session = sessionmaker(bind=engine)
 
 
 class UserTable(Base):
-    __tablename__ = "user"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100))
-    email = Column(String(100), unique=True)
-    password = Column(String(100))
+    __tablename__ = "users"
+    id = Column(String(100), primary_key=True, unique=True, nullable=False)
+    username = Column(String(100), nullable=False, unique=True)
+    name = Column(String(100), nullable=False, unique=True)
+    email = Column(String(100), unique=True, nullable=False)
+    password = Column(String(100), nullable=False)
 
 
-Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)

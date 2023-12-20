@@ -2,6 +2,7 @@ angular.module('CadastroApp', [])
   .controller('CadastroController', function () {
     var vm = this;
     vm.usuario = {
+      username: '',
       name: '',
       email: '',
       password: ''
@@ -11,15 +12,18 @@ angular.module('CadastroApp', [])
       axios.post('http://localhost:8000/', vm.usuario)
         .then(function (response) {
           console.log('Dados enviados com sucesso para o backend:', response.data);
-          // Limpar os campos do formulário após o envio bem-sucedido
-          vm.usuario = {
+          console.log('response.status = ', response.status)
+
+          vm.usuario = { // clean form fields
+            username: '',
             name: '',
             email: '',
             password: ''
           };
         })
         .catch(function (error) {
-          console.error('Erro ao enviar dados para o backend:', error);
+          console.error('error-type:', error.response.data);
+          console.error('error-status = ', error.response.status);
         });
     };
   });

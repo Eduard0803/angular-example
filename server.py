@@ -1,13 +1,12 @@
-import json
+from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import UJSONResponse
 
-from db_methods import create_user, get_user, get_users
+from db import Session, UserTable
 from user_schema import User
 
-users = []
+# users = []
 
 app = FastAPI(
     title="API",
@@ -24,36 +23,44 @@ app.add_middleware(
 
 @app.get("/")
 async def get_users():
-    # get_users()
-    users_data = {}
-    users_data["users"] = users
-    return users_data
+    with Session() as session:
+        users_data = session.query(UserTable).all()
+        return users_data
 
 
-@app.get("/user/{email}")
-async def get_user(email: str) -> dict:
-    # get_user(email)
-    for user in users:
-        if user.email == email:
-            return json.dump(user, indent=4)
-    return HTTPException(status_code=404, detail="User not found")
+@app.get("/{user_id}")
+async def get_user(user_id: str):
+    with Session() as session:
+        user_data = session.query(UserTable).filter_by(id=user_id).first()
+        if user_data is None:
+            raise HTTPException(status_code=404, detail="User not found")
 
 
 @app.post("/")
-async def create_user(user: User) -> None:
-    # create_user(user)
-    users.append(user)
-    return user.dict()
+async def create_user(user_data: User):
+    try:
+        with Session() as session:
+            new_user = UserTable(id=str(uuid4()), **user_data.dict())
+            session.add(new_user)
+            session.commit()
+            return new_user
+    except:
+        raise HTTPException(
+            status_code=400, detail="Error occurred while creating user"
+        )
 
 
-@app.patch("/backup")
-async def backup_users_data() -> None:
-    users_data = {}
-    users_data["users"] = []
-    for user in users:
-        users_data["users"].append(user.dict())
-    with open("users_data.json", "w") as file:
-        json.dump(users_data, file, indent=4)
+@app.delete("/{user_id}")
+async def delete_user(user_id: str):
+    try:
+        with Session() as session:
+            user_data = session.query(UserTable).filter_by(id=user_id).first()
+            session.delete(user_data)
+            session.commit()
+    except:
+        raise HTTPException(
+            status_code=400, detail="Error occurred while deleting user"
+        )
 
 
 if __name__ == "__main__":
